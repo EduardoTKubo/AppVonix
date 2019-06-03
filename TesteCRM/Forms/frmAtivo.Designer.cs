@@ -82,6 +82,7 @@
             this.rbNegativa = new System.Windows.Forms.RadioButton();
             this.toolTip1 = new System.Windows.Forms.ToolTip(this.components);
             this.timerLogando = new System.Windows.Forms.Timer(this.components);
+            this.txtStatusLigacao = new System.Windows.Forms.TextBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.statusStrip1.SuspendLayout();
@@ -367,6 +368,7 @@
             // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.txtStatusLigacao);
             this.groupBox3.Controls.Add(this.txtStatusVonix);
             this.groupBox3.Controls.Add(this.btnEstorno);
             this.groupBox3.Controls.Add(this.btnVendas);
@@ -390,7 +392,7 @@
             // txtStatusVonix
             // 
             this.txtStatusVonix.Enabled = false;
-            this.txtStatusVonix.Location = new System.Drawing.Point(9, 329);
+            this.txtStatusVonix.Location = new System.Drawing.Point(9, 312);
             this.txtStatusVonix.Name = "txtStatusVonix";
             this.txtStatusVonix.Size = new System.Drawing.Size(348, 20);
             this.txtStatusVonix.TabIndex = 25;
@@ -675,6 +677,14 @@
             this.timerLogando.Interval = 5000;
             this.timerLogando.Tick += new System.EventHandler(this.timerLogando_Tick);
             // 
+            // txtStatusLigacao
+            // 
+            this.txtStatusLigacao.Enabled = false;
+            this.txtStatusLigacao.Location = new System.Drawing.Point(9, 338);
+            this.txtStatusLigacao.Name = "txtStatusLigacao";
+            this.txtStatusLigacao.Size = new System.Drawing.Size(348, 20);
+            this.txtStatusLigacao.TabIndex = 26;
+            // 
             // frmAtivo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -765,5 +775,6 @@
         private System.Windows.Forms.TextBox txtInforme;
         private System.Windows.Forms.TextBox txtStatusVonix;
         private System.Windows.Forms.Timer timerLogando;
+        private System.Windows.Forms.TextBox txtStatusLigacao;
     }
 }

@@ -21,31 +21,64 @@ namespace TesteCRM.Forms
         {
             InitializeComponent();
             
-            clsVariaveis.Usu_login_automatico = false;
 
             tsslabel1.Text = Application.ProductName.ToString();
             tsslabel2.Text = clsUsuarioLogado.Usu_nome.ToString();
             tsslabel3.Text = DateTime.Now.ToString("dd/MM/yyyy");
 
-            try
-            {
-                // references - System.Pabx  ver path no properties
-                // declarar vonix1 em frmAtivo.Designers.cs
+            clsUsuarioLogado.Usu_Vonix = false;
+            txtStatusVonix.Text = ConectaAoDiscador();
 
-                vonix1.Pabx = "10.0.32.7";
-                vonix1.AgenteCod = clsUsuarioLogado.Usu_matricula.ToString();
-                vonix1.Connectar();
-            }
-            catch
-            {
-                MessageBox.Show("Ocorreu um erro ao tentar abrir o Vonix", "Sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                vonix1.Dispose();
-                Application.Exit();
-            }
+            //try
+            //{
+            //    // references - System.Pabx  ver path no properties
+            //    // declarar vonix1 em frmAtivo.Designers.cs
+
+            //    vonix1.Pabx = "10.0.32.7";
+            //    vonix1.AgenteCod = clsUsuarioLogado.Usu_matricula.ToString();
+            //    vonix1.Connectar();
+
+            //}
+            //catch
+            //{
+            //    MessageBox.Show("Ocorreu um erro ao tentar abrir o Vonix", "Sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            //    vonix1.Dispose();
+            //    Application.Exit();
+            //}
 
             //BuscarRegistro();
 
         }
+
+
+        private string ConectaAoDiscador()
+        {
+            if (clsUsuarioLogado.Usu_Vonix)
+            {
+                timerLogando.Enabled = false;
+                return "DISPONIVEL";
+            }
+            else
+            {
+                try
+                {
+                    vonix1.Pabx = "10.0.32.7";
+                    vonix1.AgenteCod = clsUsuarioLogado.Usu_matricula.ToString();
+                    vonix1.Connectar();
+                    clsUsuarioLogado.Usu_Vonix = true;
+                    timerLogando.Enabled = false;
+                    return "LOGADO";
+                }
+                catch
+                {
+                    clsUsuarioLogado.Usu_Vonix = false;
+                    timerLogando.Enabled = true;
+                    return "AGUARDANDO LOGAR NO VONIX";
+                }                
+            }            
+        }
+
+        
 
         private void InicializaConfigOperador()
         {
@@ -809,16 +842,9 @@ namespace TesteCRM.Forms
 
         private void vonix1_onConnectVx(string strDate, string ActionId)
         {
-            timerLogando.Enabled = true;
+            txtStatusVonix.Text = ConectaAoDiscador();
+            txtStatusLigacao.Text = "";
 
-            if (Classes.clsVariaveis.Usu_login_automatico)
-            {
-                txtStatusVonix.Text = "LOGANDO NO VONIX";
-            }
-            else
-            {
-                txtStatusVonix.Text = "AGUARDANDO LOGAR NO VONIX";
-            }
         }
 
         private void vonix1_onDialVx(string CallId, string strDate, string Agent, string Queue, string From, string To, string CallFilename, string ContactName, string ActionId)
@@ -831,27 +857,43 @@ namespace TesteCRM.Forms
             //Classes.Receive.CallFilename = CallFilename;
             //Classes.Receive.ActionId = ActionId;
 
-            txtStatusVonix.Text = "ATENDIMENTO";
-            //txtStatusVonix.BackColor = Color.Green;
+            txtStatusLigacao.Text = "Atendeu";
         }
 
         private void vonix1_onLoginVx(string strDate, string Location, string ActionId)
         {
-            txtStatusVonix.Text = "DISPONIVEL";
-            //txtStatusVonix.BackColor = Color.Gray;
+            timerLogando.Enabled = false;
+            txtStatusVonix.Text = "LOGADO";
         }
+        
+        private void onLogoffVx(string strDate, string Location, string ActionId)
+        {
+            timerLogando.Enabled = true;
+            txtStatusVonix.Text = "DESLOGADO";
+        }
+
+        private void onPauseVx(string strDate, string Reason, string ActionId)
+        {
+            txtStatusLigacao.Text = "em pausa : " + Reason;
+        }
+
+        private void onUnpauseVx(string strDate, string ActionId)
+        {
+            txtStatusLigacao.Text = "retorno da pausa  ";
+        }
+
 
         private void vonix1_onDialFailureVx(string CallId, string strDate, int CauseId, string CauseDescription)
         {
-            txtStatusVonix.Text = "DISPONIVEL";
-            //txtStatusVonix.BackColor = Color.Gray;
+            //timerLogando.Enabled = true;
+            txtStatusLigacao.Text = "Falha na ligação";
         }
 
         private void vonix1_onHangUpVx(string CallId, string strDate, int CauseId, string CauseDescription)
         {
             //BuscaAgendamento();
-            txtStatusVonix.Text = "DISPONIVEL";
-            //txtStatusVonix.BackColor = Color.Gray;
+            //timerLogando.Enabled = true;
+            txtStatusLigacao.Text = "Ligação desligada";
         }
 
         private void vonix1_onStatusVx(string Status, string Location, string ActionId)
@@ -859,25 +901,27 @@ namespace TesteCRM.Forms
             if (Status == "ONLINE")
             {
                 timerLogando.Enabled = false;
-                //tsslRamal.Text = " Ramal: " + Location;
-                txtStatusVonix.Text = "DISPONIVEL";
-                //txtStatusVonix.BackColor = Color.Gray;
+                txtStatusVonix.Text = "LOGADO";
+                txtStatusLigacao.Text = "";
             }
             else
             {
+                timerLogando.Enabled = true;
                 txtStatusVonix.Text = "AGUARDANDO LOGAR NO VONIX";
+                txtStatusLigacao.Text = "";
             }
         }
 
         private void timerLogando_Tick(object sender, EventArgs e)
         {
-            if (Classes.clsVariaveis.Usu_login_automatico)
+            if (clsUsuarioLogado.Usu_Vonix)
             {
                 vonix1.Login();
                 timerLogando.Enabled = false;
             }
             else
             {
+                timerLogando.Enabled = true;
                 vonix1.Status("");
             }
         }
@@ -889,7 +933,7 @@ namespace TesteCRM.Forms
                 if (!Deslog)
                 {
                     Deslog = true;
-                    if (Classes.clsVariaveis.Usu_login_automatico)
+                    if (clsUsuarioLogado.Usu_Vonix)
                     {
                         vonix1.Logoff();
                     }

@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System;
+using System.Windows.Forms;
 
 namespace TesteCRM.Classes.GetSet
 {
@@ -89,6 +90,21 @@ namespace TesteCRM.Classes.GetSet
             set { usu_BOffice = value.TrimStart().TrimEnd(); }
         }
 
+
+        private static bool usu_login_automatico = false;
+        public static bool Usu_login_automatico
+        {
+            get { return usu_login_automatico; }
+            set { usu_login_automatico = value; }
+        }
+
+        private static bool usu_Vonix = false;
+        public static bool Usu_Vonix
+        {
+            get { return usu_Vonix; }
+            set { usu_Vonix = value; }
+        }
+
         public static void CarregarUsuarioLogado(DataTable dt)
         {
             //clsUsuario.usu_cod = Convert.ToInt32(dt.Rows[0][0].ToString());
@@ -113,7 +129,7 @@ namespace TesteCRM.Classes.GetSet
             }
             else
             {
-                if(senha.Length > 0)
+                if (senha.Length > 0)
                 {
                     clsVariaveis.GstrSQL = ("select * from Usuario where Ativo = 1 and CPF ='@cpf' and Senha = '@senha' ").Replace("@cpf", cpf).Replace("@senha", senha);
                 }
@@ -121,7 +137,7 @@ namespace TesteCRM.Classes.GetSet
                 {
                     clsVariaveis.GstrSQL = ("select * from Usuario where Ativo = 1 and CPF ='@cpf' ").Replace("@cpf", cpf);
                 }
-                
+
             }
 
             if (Classes.clsBanco.Consulta(clsVariaveis.GstrSQL).Rows.Count > 0)
@@ -154,12 +170,12 @@ namespace TesteCRM.Classes.GetSet
 
         public static void MapOperacional(string _cpf)
         {
-            clsVariaveis.GstrSQL = "select * from Map_Operacional where Operador = '" + _cpf + 
-                                   "' and data = '" + DateTime.Now.ToString("yyyy-MM-dd") + 
+            clsVariaveis.GstrSQL = "select * from Map_Operacional where Operador = '" + _cpf +
+                                   "' and data = '" + DateTime.Now.ToString("yyyy-MM-dd") +
                                    "' and PA = '" + clsUsuarioLogado.usu_nomePC + "' ";
             DataTable dtUsu = new DataTable();
             dtUsu = Classes.clsBanco.Consulta(clsVariaveis.GstrSQL);
-            if (dtUsu.Rows.Count == 0 )
+            if (dtUsu.Rows.Count == 0)
             {
                 clsVariaveis.GstrSQL = "insert into Map_Operacional ( Operador ,pa ,data ,inicio ) " +
                                        "values ( '" + _cpf + "' ,'" + clsUsuarioLogado.usu_nomePC +
@@ -168,6 +184,9 @@ namespace TesteCRM.Classes.GetSet
                 bool booMap = clsBanco.ExecuteQuery(clsVariaveis.GstrSQL);
             }
         }
+
+
+        
 
     }
 }

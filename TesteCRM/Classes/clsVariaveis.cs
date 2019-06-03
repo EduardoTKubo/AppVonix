@@ -83,14 +83,6 @@ namespace TesteCRM.Classes
             set { clsVariaveis.ghrIni = value; }
         }
 
-
-        private static bool usu_login_automatico = false;
-        public static bool Usu_login_automatico
-        {
-            get { return clsVariaveis.usu_login_automatico; }
-            set { clsVariaveis.usu_login_automatico = value; }
-        }
-
-
+               
     }
 }
