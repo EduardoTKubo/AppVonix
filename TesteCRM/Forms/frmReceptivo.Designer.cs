@@ -61,11 +61,16 @@
             this.label5 = new System.Windows.Forms.Label();
             this.dataGridView1 = new System.Windows.Forms.DataGridView();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.txtStatusLigacao = new System.Windows.Forms.TextBox();
+            this.txtStatusVonix = new System.Windows.Forms.TextBox();
+            this.timerLogando = new System.Windows.Forms.Timer(this.components);
+            this.vonix1 = new System.Pabx.Vonix();
             this.statusStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // statusStrip1
@@ -192,6 +197,7 @@
             this.rbLigMuda.TabStop = true;
             this.rbLigMuda.Text = "Ligação Muda";
             this.rbLigMuda.UseVisualStyleBackColor = true;
+            this.rbLigMuda.CheckedChanged += new System.EventHandler(this.rbLigMuda_CheckedChanged);
             this.rbLigMuda.Click += new System.EventHandler(this.rbLigMuda_Click);
             // 
             // rbLigErrado
@@ -338,6 +344,7 @@
             // cboOrigem
             // 
             this.cboOrigem.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cboOrigem.Enabled = false;
             this.cboOrigem.FormattingEnabled = true;
             this.cboOrigem.Location = new System.Drawing.Point(73, 26);
             this.cboOrigem.Name = "cboOrigem";
@@ -352,7 +359,7 @@
             this.groupBox2.Controls.Add(this.dataGridView1);
             this.groupBox2.Location = new System.Drawing.Point(379, 3);
             this.groupBox2.Name = "groupBox2";
-            this.groupBox2.Size = new System.Drawing.Size(361, 269);
+            this.groupBox2.Size = new System.Drawing.Size(361, 256);
             this.groupBox2.TabIndex = 5;
             this.groupBox2.TabStop = false;
             // 
@@ -369,11 +376,11 @@
             // txtObsAg
             // 
             this.txtObsAg.BackColor = System.Drawing.Color.Silver;
-            this.txtObsAg.Location = new System.Drawing.Point(86, 172);
+            this.txtObsAg.Location = new System.Drawing.Point(86, 173);
             this.txtObsAg.MaxLength = 1000;
             this.txtObsAg.Multiline = true;
             this.txtObsAg.Name = "txtObsAg";
-            this.txtObsAg.Size = new System.Drawing.Size(269, 91);
+            this.txtObsAg.Size = new System.Drawing.Size(269, 74);
             this.txtObsAg.TabIndex = 11;
             // 
             // label5
@@ -396,11 +403,48 @@
             // 
             // groupBox3
             // 
-            this.groupBox3.Location = new System.Drawing.Point(379, 270);
+            this.groupBox3.Controls.Add(this.txtStatusLigacao);
+            this.groupBox3.Controls.Add(this.txtStatusVonix);
+            this.groupBox3.Location = new System.Drawing.Point(379, 256);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(361, 45);
+            this.groupBox3.Size = new System.Drawing.Size(361, 58);
             this.groupBox3.TabIndex = 6;
             this.groupBox3.TabStop = false;
+            // 
+            // txtStatusLigacao
+            // 
+            this.txtStatusLigacao.Enabled = false;
+            this.txtStatusLigacao.Location = new System.Drawing.Point(6, 35);
+            this.txtStatusLigacao.Name = "txtStatusLigacao";
+            this.txtStatusLigacao.Size = new System.Drawing.Size(348, 20);
+            this.txtStatusLigacao.TabIndex = 28;
+            // 
+            // txtStatusVonix
+            // 
+            this.txtStatusVonix.Enabled = false;
+            this.txtStatusVonix.Location = new System.Drawing.Point(6, 9);
+            this.txtStatusVonix.Name = "txtStatusVonix";
+            this.txtStatusVonix.Size = new System.Drawing.Size(348, 20);
+            this.txtStatusVonix.TabIndex = 27;
+            // 
+            // timerLogando
+            // 
+            this.timerLogando.Interval = 5000;
+            this.timerLogando.Tick += new System.EventHandler(this.timerLogando_Tick);
+            // 
+            // vonix1
+            // 
+            this.vonix1.onConnectVx += new System.Pabx.Vonix.cbConnect(this.vonix1_onConnect);
+            this.vonix1.onDialVx += new System.Pabx.Vonix.cbDial(this.vonix1_onDial);
+            this.vonix1.onDialFailureVx += new System.Pabx.Vonix.cbDialFailure(this.vonix1_onDialFailure);
+            this.vonix1.onDialAnswerVx += new System.Pabx.Vonix.cbDialAnswer(this.vonix1_onDialAnswer);
+            this.vonix1.onHangUpVx += new System.Pabx.Vonix.cbHangUp(this.vonix1_onHangUp);
+            this.vonix1.onReceiveVx += new System.Pabx.Vonix.cbReceive(this.vonix1_onReceive);
+            this.vonix1.onLoginVx += new System.Pabx.Vonix.cbLogin(this.vonix1_onLogin);
+            this.vonix1.onLogoffVx += new System.Pabx.Vonix.cbLogoff(this.vonix1_onLogoff);
+            this.vonix1.onPauseVx += new System.Pabx.Vonix.cbPause(this.vonix1_onPause);
+            this.vonix1.onUnpauseVx += new System.Pabx.Vonix.cbUnpause(this.vonix1_onUnpause);
+            this.vonix1.onStatusVx += new System.Pabx.Vonix.cbStatus(this.vonix1_onStatus);
             // 
             // frmReceptivo
             // 
@@ -416,6 +460,7 @@
             this.Name = "frmReceptivo";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmReceptivo";
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmReceptivo_FormClosed);
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -425,6 +470,8 @@
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).EndInit();
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -464,5 +511,9 @@
         private System.Windows.Forms.DataGridView dataGridView1;
         private System.Windows.Forms.Label lblIdAg;
         private System.Windows.Forms.TextBox txtObsAg;
+        private System.Windows.Forms.Timer timerLogando;
+        private System.Pabx.Vonix vonix1;
+        private System.Windows.Forms.TextBox txtStatusLigacao;
+        private System.Windows.Forms.TextBox txtStatusVonix;
     }
 }

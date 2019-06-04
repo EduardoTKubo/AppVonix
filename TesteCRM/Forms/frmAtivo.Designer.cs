@@ -94,12 +94,16 @@
             // 
             // vonix1
             // 
-            this.vonix1.onConnectVx += new System.Pabx.Vonix.cbConnect(this.vonix1_onConnectVx);
-            this.vonix1.onDialVx += new System.Pabx.Vonix.cbDial(this.vonix1_onDialVx);
-            this.vonix1.onDialFailureVx += new System.Pabx.Vonix.cbDialFailure(this.vonix1_onDialFailureVx);
-            this.vonix1.onHangUpVx += new System.Pabx.Vonix.cbHangUp(this.vonix1_onHangUpVx);
-            this.vonix1.onLoginVx += new System.Pabx.Vonix.cbLogin(this.vonix1_onLoginVx);
-            this.vonix1.onStatusVx += new System.Pabx.Vonix.cbStatus(this.vonix1_onStatusVx);
+            this.vonix1.onConnectVx += new System.Pabx.Vonix.cbConnect(this.vonix1_onConnect);
+            this.vonix1.onDialVx += new System.Pabx.Vonix.cbDial(this.vonix1_onDial);
+            this.vonix1.onDialAnswerVx += new System.Pabx.Vonix.cbDialAnswer(this.vonix1_onDialAnswer);
+            this.vonix1.onDialFailureVx += new System.Pabx.Vonix.cbDialFailure(this.vonix1_onDialFailure);
+            this.vonix1.onHangUpVx += new System.Pabx.Vonix.cbHangUp(this.vonix1_onHangUp);
+            this.vonix1.onLoginVx += new System.Pabx.Vonix.cbLogin(this.vonix1_onLogin);
+            this.vonix1.onLogoffVx += new System.Pabx.Vonix.cbLogoff(this.vonix1_onLogoff);
+            this.vonix1.onStatusVx += new System.Pabx.Vonix.cbStatus(this.vonix1_onStatus);
+            this.vonix1.onPauseVx += new System.Pabx.Vonix.cbPause(this.vonix1_onPause);
+            this.vonix1.onUnpauseVx += new System.Pabx.Vonix.cbUnpause(this.vonix1_onUnpause);
             // 
             // groupBox1
             // 

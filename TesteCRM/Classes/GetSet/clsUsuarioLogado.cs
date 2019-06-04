@@ -98,12 +98,6 @@ namespace TesteCRM.Classes.GetSet
             set { usu_login_automatico = value; }
         }
 
-        private static bool usu_Vonix = false;
-        public static bool Usu_Vonix
-        {
-            get { return usu_Vonix; }
-            set { usu_Vonix = value; }
-        }
 
         public static void CarregarUsuarioLogado(DataTable dt)
         {

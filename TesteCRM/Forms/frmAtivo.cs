@@ -15,48 +15,36 @@ namespace TesteCRM.Forms
 {
     public partial class frmAtivo : Form
     {
-        private bool Deslog = false;
+        private bool Iniciou = true;
 
         public frmAtivo()
         {
             InitializeComponent();
-            
 
             tsslabel1.Text = Application.ProductName.ToString();
             tsslabel2.Text = clsUsuarioLogado.Usu_nome.ToString();
             tsslabel3.Text = DateTime.Now.ToString("dd/MM/yyyy");
 
-            clsUsuarioLogado.Usu_Vonix = false;
-            txtStatusVonix.Text = ConectaAoDiscador();
-
-            //try
-            //{
-            //    // references - System.Pabx  ver path no properties
-            //    // declarar vonix1 em frmAtivo.Designers.cs
-
-            //    vonix1.Pabx = "10.0.32.7";
-            //    vonix1.AgenteCod = clsUsuarioLogado.Usu_matricula.ToString();
-            //    vonix1.Connectar();
-
-            //}
-            //catch
-            //{
-            //    MessageBox.Show("Ocorreu um erro ao tentar abrir o Vonix", "Sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            //    vonix1.Dispose();
-            //    Application.Exit();
-            //}
-
-            //BuscarRegistro();
+            if (clsVonix.LogadoNoVonix == "NAO")
+            {
+                txtStatusVonix.Text = ConectaAoDiscador();
+            }
+            else
+            {
+                txtStatusVonix.Text = "LOGADO";
+            }
 
         }
 
 
         private string ConectaAoDiscador()
         {
-            if (clsUsuarioLogado.Usu_Vonix)
+            txtStatusLigacao.Text = "";
+
+            if (clsVonix.LogadoNoVonix == "SIM")
             {
                 timerLogando.Enabled = false;
-                return "DISPONIVEL";
+                return "LOGADO";
             }
             else
             {
@@ -65,24 +53,24 @@ namespace TesteCRM.Forms
                     vonix1.Pabx = "10.0.32.7";
                     vonix1.AgenteCod = clsUsuarioLogado.Usu_matricula.ToString();
                     vonix1.Connectar();
-                    clsUsuarioLogado.Usu_Vonix = true;
+
                     timerLogando.Enabled = false;
                     return "LOGADO";
                 }
                 catch
                 {
-                    clsUsuarioLogado.Usu_Vonix = false;
+                    clsVonix.LogadoNoVonix = "NAO";
                     timerLogando.Enabled = true;
-                    return "AGUARDANDO LOGAR NO VONIX";
-                }                
-            }            
+                    return "FALHA AO LOGAR NO VONIX";
+                }
+            }
         }
 
-        
+
 
         private void InicializaConfigOperador()
         {
-            
+
             clsUsuarioLogado.Usu_origem = "";
             clsUsuarioLogado.Usu_fila = "";
             clsUsuarioLogado.Usu_discador = "";
@@ -602,6 +590,14 @@ namespace TesteCRM.Forms
                     }
                 }
 
+                try
+                {
+                    vonix1.Dial(clsVariaveis.GstrDDD + clsVariaveis.GstrTel);
+                }
+                catch
+                {
+                    MessageBox.Show("Erro ao conectar com o Vonix", "Sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
 
             }
         }
@@ -680,6 +676,14 @@ namespace TesteCRM.Forms
                 txtDDD.Text = clsVariaveis.GstrDDD;
                 txtFone.Text = clsVariaveis.GstrTel;
                 // discar
+                try
+                {
+                    vonix1.Dial(clsVariaveis.GstrDDD + clsVariaveis.GstrTel);
+                }
+                catch
+                {
+                    MessageBox.Show("Erro ao conectar com o Vonix", "Sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
             }
 
         }
@@ -783,7 +787,7 @@ namespace TesteCRM.Forms
                 Classes.clsFuncoes.OpenFormModal(new Forms.frmAgendar());
                 if (Classes.clsVariaveis.SalvarInformacao)
                 {
-                    rbGeral(rbAG, "9", rbAG.Text, "NAO","NAO");
+                    rbGeral(rbAG, "9", rbAG.Text, "NAO", "NAO");
                 }
             }
             rbAG.Checked = false;
@@ -800,7 +804,7 @@ namespace TesteCRM.Forms
 
                 if (Classes.clsVariaveis.SalvarInformacao)
                 {
-                    rbGeral(rbNegativa, "9", Classes.clsVariaveis.GstrNegativa, "NAO","NAO");
+                    rbGeral(rbNegativa, "9", Classes.clsVariaveis.GstrNegativa, "NAO", "NAO");
                 }
             }
             rbNegativa.Checked = false;
@@ -823,7 +827,7 @@ namespace TesteCRM.Forms
 
                 if (Classes.clsVariaveis.SalvarInformacao)
                 {
-                    rbGeral(rbVenda, "9", "OK", "NAO","NAO");
+                    rbGeral(rbVenda, "9", "OK", "NAO", "NAO");
                 }
             }
             rbVenda.Checked = false;
@@ -840,14 +844,13 @@ namespace TesteCRM.Forms
         }
 
 
-        private void vonix1_onConnectVx(string strDate, string ActionId)
+        private void vonix1_onConnect(string strDate, string ActionId)
         {
             txtStatusVonix.Text = ConectaAoDiscador();
             txtStatusLigacao.Text = "";
-
         }
 
-        private void vonix1_onDialVx(string CallId, string strDate, string Agent, string Queue, string From, string To, string CallFilename, string ContactName, string ActionId)
+        private void vonix1_onDial(string CallId, string strDate, string Agent, string Queue, string From, string To, string CallFilename, string ContactName, string ActionId)
         {
             //Classes.Receive.CallId = CallId;
             //Classes.Receive.StrDate = strDate.Substring(6, 4) + "-" + strDate.Substring(3, 2) + "-" + strDate.Substring(0, 2);
@@ -857,64 +860,75 @@ namespace TesteCRM.Forms
             //Classes.Receive.CallFilename = CallFilename;
             //Classes.Receive.ActionId = ActionId;
 
+            txtStatusLigacao.Text = "Discando";
+        }
+
+        private void vonix1_onDialAnswer(string CallId, string strDate)
+        {
             txtStatusLigacao.Text = "Atendeu";
         }
 
-        private void vonix1_onLoginVx(string strDate, string Location, string ActionId)
+        private void vonix1_onLogin(string strDate, string Location, string ActionId)
         {
             timerLogando.Enabled = false;
             txtStatusVonix.Text = "LOGADO";
+            txtStatusLigacao.Text = "";
+            clsVonix.LogadoNoVonix = "SIM";
+            if (Iniciou)
+            {
+                Iniciou = false;
+                BuscarRegistro();
+            }
         }
-        
-        private void onLogoffVx(string strDate, string Location, string ActionId)
+
+        private void vonix1_onLogoff(string strDate, string Location, int Duration, string ActionId)
         {
             timerLogando.Enabled = true;
             txtStatusVonix.Text = "DESLOGADO";
+            txtStatusLigacao.Text = "";
+            clsVonix.LogadoNoVonix = "NAO";
+            Iniciou = true;
         }
 
-        private void onPauseVx(string strDate, string Reason, string ActionId)
+        private void vonix1_onPause(string strDate, int Reason, string ActionId)
         {
             txtStatusLigacao.Text = "em pausa : " + Reason;
         }
 
-        private void onUnpauseVx(string strDate, string ActionId)
+        private void vonix1_onUnpause(string strDate, string ActionId)
         {
             txtStatusLigacao.Text = "retorno da pausa  ";
         }
 
-
-        private void vonix1_onDialFailureVx(string CallId, string strDate, int CauseId, string CauseDescription)
+        private void vonix1_onDialFailure(string CallId, string strDate, int CauseId, string CauseDescription)
         {
-            //timerLogando.Enabled = true;
-            txtStatusLigacao.Text = "Falha na ligação";
+            txtStatusLigacao.Text = "encerrou ou falha na ligação";
         }
 
-        private void vonix1_onHangUpVx(string CallId, string strDate, int CauseId, string CauseDescription)
+        private void vonix1_onHangUp(string CallId, string strDate, int CauseId, string CauseDescription)
         {
             //BuscaAgendamento();
-            //timerLogando.Enabled = true;
             txtStatusLigacao.Text = "Ligação desligada";
         }
 
-        private void vonix1_onStatusVx(string Status, string Location, string ActionId)
+        private void vonix1_onStatus(string Status, string Location, string ActionId)
         {
+            txtStatusLigacao.Text = "";
             if (Status == "ONLINE")
             {
                 timerLogando.Enabled = false;
                 txtStatusVonix.Text = "LOGADO";
-                txtStatusLigacao.Text = "";
             }
             else
             {
                 timerLogando.Enabled = true;
                 txtStatusVonix.Text = "AGUARDANDO LOGAR NO VONIX";
-                txtStatusLigacao.Text = "";
             }
         }
 
         private void timerLogando_Tick(object sender, EventArgs e)
         {
-            if (clsUsuarioLogado.Usu_Vonix)
+            if (clsVonix.LogadoNoVonix == "NAO")
             {
                 vonix1.Login();
                 timerLogando.Enabled = false;
@@ -930,25 +944,14 @@ namespace TesteCRM.Forms
         {
             try
             {
-                if (!Deslog)
+                if (clsVonix.LogadoNoVonix == "SIM")
                 {
-                    Deslog = true;
-                    if (clsUsuarioLogado.Usu_Vonix)
-                    {
-                        vonix1.Logoff();
-                    }
-                    System.Threading.Thread.Sleep(2000);
-                    vonix1.Desconectar();
+                    vonix1.Logoff();
                 }
-                else
-                {
-                    //if (vonix1.ErroLogoff)
-                    //{
-                    //    MessageBox.Show("Ocorreu um erro ao deslogar o Agente do Vonix." + Environment.NewLine +
-                    //    "Deslog o Agente no Tristerix", "Sistema", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    //    this.Dispose();
-                    //
-                }
+                System.Threading.Thread.Sleep(2000);
+                vonix1.Desconectar();
+                vonix1.Dispose();
+                clsVonix.LogadoNoVonix = "NAO";
             }
             catch
             {

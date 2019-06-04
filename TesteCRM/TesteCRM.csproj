@@ -80,6 +80,7 @@
     <Compile Include="Classes\GetSet\clsUsuario.cs" />
     <Compile Include="Classes\GetSet\clsUsuarioLogado.cs" />
     <Compile Include="Classes\GetSet\clsVenda.cs" />
+    <Compile Include="Classes\GetSet\clsVonix.cs" />
     <Compile Include="Forms\frmAgendar.cs">
       <SubType>Form</SubType>
     </Compile>
