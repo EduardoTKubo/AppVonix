@@ -32,7 +32,6 @@ namespace TesteCRM.Forms
             }
 
             Limpar();
-            InicializaReceptivo();
             InicializaVonix();
             PreencheGridAg();
 
@@ -50,10 +49,9 @@ namespace TesteCRM.Forms
         private void Incluir_Receptivo()
         {
             Limpar();
-            InicializaReceptivo();
 
             clsVariaveis.GstrSQL = "Insert into Receptivo ( data ,horario ,resultado ,operador ,nome ,ddd1 ,fone1 ,wave ,nomefila ,origem ) " +
-                                   "values ( cast(getdate() as date) ,'" + DateTime.Now.ToString("HH:mm:ss") + "' ,'NAO TABULOU' ,";
+                                   "values ( cast(getdate() as date) ,'" + DateTime.Now.ToString("HH:mm:ss") + "' ,NULL ,";
             clsVariaveis.GstrSQL += clsFuncoes.MontaInsert(clsUsuarioLogado.Usu_cpf, "TEXT") + ", ";
             clsVariaveis.GstrSQL += clsFuncoes.MontaInsert(clsVonix.Contactname, "TEXT") + ", ";
             clsVariaveis.GstrSQL += clsFuncoes.MontaInsert(clsVariaveis.GstrDDD, "TEXT") + ", ";
@@ -62,19 +60,19 @@ namespace TesteCRM.Forms
             clsVariaveis.GstrSQL += clsFuncoes.MontaInsert(clsVonix.Queue, "TEXT") + ", ";
             clsVariaveis.GstrSQL += clsFuncoes.MontaInsert(clsVonix.Queue, "TEXT") + ")";
             bool booIni = clsBanco.ExecuteQuery(clsVariaveis.GstrSQL);
+
             if (booIni)
             {
                 clsVariaveis.GstrSQL = "select top 1 * from Receptivo where Data = cast(getdate() as date) " +
                                "and Operador = '" + clsUsuarioLogado.Usu_cpf +
                                "' and ddd1   = '" + clsVariaveis.GstrDDD +
                                "' and fone1  = '" + clsVariaveis.GstrTel +
-                               "' and Resultado = 'NAO TABULOU' order by id_recept desc";
+                               "' and Resultado is NULL order by id_recept desc";
                 DataTable dtR = Classes.clsBanco.Consulta(clsVariaveis.GstrSQL);
                 if (dtR.Rows.Count > 0)
                 {
+                    clsReceptivo.Rec_Id_Recept = dtR.Rows[0]["id_recept"].ToString();
                     lblIdRecept.Text = dtR.Rows[0]["id_recept"].ToString();
-                    clsReceptivo.Rcp_id_recept = dtR.Rows[0]["id_recept"].ToString();
-
                     cboOrigem.Text = dtR.Rows[0]["origem"].ToString();
                     txtNome.Text = dtR.Rows[0]["nome"].ToString();
                     txtDDD1.Text = dtR.Rows[0]["ddd1"].ToString();
@@ -85,13 +83,16 @@ namespace TesteCRM.Forms
 
         private void Preenche_Agendado(string _idAg, string _idRecept)
         {
-            clsVariaveis.GstrSQL = ("select * from Receptivo where IdRecept = @idRecept ").Replace("@idRecept", _idRecept);
-
-            DataTable dtR = Classes.clsBanco.Consulta(clsVariaveis.GstrSQL);
+            DataTable dtR = Classes.clsBanco.Consulta("select * from Receptivo where Id_Recept = " + _idRecept);
             if (dtR.Rows.Count > 0)
             {
-                InicializaReceptivo();
                 InicializaVonix();
+
+                clsReceptivo.Rec_Id_Recept = _idRecept;
+                //clsVonix.CallFilename = dtR.Rows[0]["WAVE"].ToString();
+                //clsVonix.Queue = dtR.Rows[0]["NOMEFILA"].ToString();
+                clsVariaveis.GstrDDD = dtR.Rows[0]["ddd1"].ToString();
+                clsVariaveis.GstrTel = dtR.Rows[0]["fone1"].ToString();
 
                 lblIdAg.Text = _idAg;
                 lblIdRecept.Text = _idRecept;
@@ -102,6 +103,16 @@ namespace TesteCRM.Forms
                 txtFone1.Text = dtR.Rows[0]["fone1"].ToString();
                 txtEmail.Text = dtR.Rows[0]["email"].ToString();
                 txtObs.Text = dtR.Rows[0]["obs"].ToString();
+
+                //try
+                //{
+                //    vonix1.Dial(clsVariaveis.GstrDDD + clsVariaveis.GstrTel);
+                //}
+                //catch
+                //{
+                //    MessageBox.Show("Erro ao conectar com o Vonix", "Sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                //}
+
             }
         }
 
@@ -113,7 +124,8 @@ namespace TesteCRM.Forms
             DataTable dtRcp = Classes.clsBanco.Consulta(clsVariaveis.GstrSQL);
             if (dtRcp.Rows.Count != 0)
             {
-                clsReceptivo.Rcp_id_recept = dtRcp.Rows[0]["id_recept"].ToString();
+                lblIdRecept.Text = dtRcp.Rows[0]["id_recept"].ToString();
+                clsReceptivo.Rec_Id_Recept = dtRcp.Rows[0]["id_recept"].ToString();
                 return true;
             }
             else
@@ -144,13 +156,6 @@ namespace TesteCRM.Forms
             }
         }
 
-        private void InicializaReceptivo()
-        {
-            clsReceptivo.Rcp_id_recept = "";
-            clsReceptivo.Rcp_id_ag = "";
-            clsReceptivo.Rcp_origem = "";
-        }
-
         private void InicializaVonix()
         {
             clsVonix.CallId = "";
@@ -174,16 +179,16 @@ namespace TesteCRM.Forms
         {
             bool resultado = false;
 
-            if (clsReceptivo.Rcp_id_recept == "")
+            if (lblIdRecept.Text == "")
             {
                 bool booR = BuscarIdRecept();
                 if (booR == false) { return resultado; }
             }
 
 
-            if (clsReceptivo.Rcp_id_ag != "")
+            if (lblIdAg.Text != "")
             {
-                clsVariaveis.GstrSQL = "update agenda set ativo = 0 where id_ag = " + clsAtivo.Atv_id_ag;
+                clsVariaveis.GstrSQL = "update Receptivo_AG set ativo = 0 where id_ag = " + lblIdAg.Text;
                 bool booAg = clsBanco.ExecuteQuery(clsVariaveis.GstrSQL);
             }
 
@@ -198,13 +203,12 @@ namespace TesteCRM.Forms
             clsVariaveis.GstrSQL += clsFuncoes.MontaUpdate("wave", clsVonix.CallFilename, "TEXT") + ", ";
             clsVariaveis.GstrSQL += clsFuncoes.MontaUpdate("nomefila", clsVonix.Queue, "TEXT") + ", ";
             clsVariaveis.GstrSQL += clsFuncoes.MontaUpdate("obs", txtObs.Text, "TEXT");
-            clsVariaveis.GstrSQL += " where Id_Recept = " + clsReceptivo.Rcp_id_recept;
+            clsVariaveis.GstrSQL += " where Id_Recept = " + lblIdRecept.Text;
             bool booIni = clsBanco.ExecuteQuery(clsVariaveis.GstrSQL);
             if (booIni)
             {
-                MessageBox.Show("incluido com sucesso", _res, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+                //MessageBox.Show("tabulado com sucesso", _res, MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
                 Limpar();
-                InicializaReceptivo();
                 InicializaVonix();
                 resultado = true;
             }
@@ -232,14 +236,14 @@ namespace TesteCRM.Forms
             {
                 if (_confirma == "NAO")
                 {
-                    EncerraContato(clsAtivo.Atv_cod, _uso, _res);
+                    EncerraContato(lblIdRecept.Text, _uso, _res);
                 }
                 else
                 {
                     DialogResult dialogResult = MessageBox.Show("Tem certeza ?", _res, MessageBoxButtons.YesNo);
                     if (dialogResult == DialogResult.Yes)
                     {
-                        EncerraContato(clsAtivo.Atv_cod, _uso, _res);
+                        EncerraContato(lblIdRecept.Text, _uso, _res);
                     }
                 }
             }
@@ -339,10 +343,16 @@ namespace TesteCRM.Forms
 
         private void dataGridView1_DoubleClick(object sender, EventArgs e)
         {
-            int ID1 = Convert.ToInt32(dataGridView1[0, dataGridView1.CurrentRow.Index].Value);
-            int ID2 = Convert.ToInt32(dataGridView1[1, dataGridView1.CurrentRow.Index].Value);
-            txtObsAg.Text = Convert.ToString(dataGridView1[5, dataGridView1.CurrentRow.Index].Value);
-            Preenche_Agendado(ID1.ToString(), ID2.ToString());
+            int nLin = dataGridView1.RowCount;
+            if (nLin != 0)
+            {
+                dataGridView1.Enabled = false;
+                int ID1 = Convert.ToInt32(dataGridView1[0, dataGridView1.CurrentRow.Index].Value);
+                int ID2 = Convert.ToInt32(dataGridView1[1, dataGridView1.CurrentRow.Index].Value);
+                txtObsAg.Text = Convert.ToString(dataGridView1[5, dataGridView1.CurrentRow.Index].Value);
+                Preenche_Agendado(ID1.ToString(), ID2.ToString());
+                dataGridView1.Enabled = true;
+            }
         }
 
         private void btnLimpar_Click(object sender, EventArgs e)
@@ -388,22 +398,40 @@ namespace TesteCRM.Forms
 
         private void vonix1_onConnect(string strDate, string ActionId)
         {
+            // ocorre quando a conexao com o dialer é estabelecida
             txtStatusVonix.Text = ConectaAoDiscador();
             txtStatusLigacao.Text = "";
         }
 
         private void vonix1_onDial(string CallId, string strDate, string Agent, string Queue, string From, string To, string CallFilename, string ContactName, string ActionId)
         {
+            // qdo o agente realizado uma chamada
+            //clsVonix.CallId = CallId;
+            //clsVonix.StrDate = strDate.Substring(6, 4) + "-" + strDate.Substring(3, 2) + "-" + strDate.Substring(0, 2);
+            clsVonix.Queue = Queue;
+            //clsVonix.From = From;
+            //clsVonix.To = To;
+            clsVonix.CallFilename = CallFilename;
+            //clsVonix.Contactname = ContactName;
+            //clsVonix.ActionId = ActionId;
             txtStatusLigacao.Text = "Discando";
         }
 
         private void vonix1_onDialAnswer(string CallId, string strDate)
         {
-            txtStatusLigacao.Text = "Atendeu";
+            // qdo a chamada é atendida
+            txtStatusLigacao.Text = "Cliente Atendeu";
+        }
+
+        private void vonix1_onDialFailure(string CallId, string strDate, int CauseId, string CauseDescription)
+        {
+            // qdo a chamada nao eh atendida ou falha
+            txtStatusLigacao.Text = "encerrou ou falha na ligação";
         }
 
         private void vonix1_onLogin(string strDate, string Location, string ActionId)
         {
+            // qdo o agente se loga
             timerLogando.Enabled = false;
             txtStatusVonix.Text = "LOGADO";
             txtStatusLigacao.Text = "";
@@ -412,6 +440,7 @@ namespace TesteCRM.Forms
 
         private void vonix1_onLogoff(string strDate, string Location, int Duration, string ActionId)
         {
+            // qdo o agente se desloga
             timerLogando.Enabled = true;
             txtStatusVonix.Text = "DESLOGADO";
             txtStatusLigacao.Text = "";
@@ -420,18 +449,20 @@ namespace TesteCRM.Forms
 
         private void vonix1_onPause(string strDate, int Reason, string ActionId)
         {
+            // qdo o agente entra em pausa
             txtStatusLigacao.Text = "em pausa : " + Reason;
         }
 
         private void vonix1_onUnpause(string strDate, string ActionId)
         {
+            // qdo o agente sai da pausa
             txtStatusLigacao.Text = "retorno da pausa  ";
         }
 
         private void vonix1_onReceive(string CallId, string strDate, string Queue, string From, string To, string CallFilename, string ContactName, string ActionId)
         {
+            // qdo o agente recebe uma chamada
             Limpar();
-            InicializaReceptivo();
 
             clsVonix.CallId = CallId;
             clsVonix.StrDate = strDate.Substring(6, 4) + "-" + strDate.Substring(3, 2) + "-" + strDate.Substring(0, 2);
@@ -443,10 +474,38 @@ namespace TesteCRM.Forms
             clsVonix.ActionId = ActionId;
 
             txtStatusLigacao.Text = "EM ATENDIMENTO";
-
             PreencheTel();
+
+            cboOrigem.Text = Queue;
+            txtNome.Text = ContactName;
             Incluir_Receptivo();
+
+            //// quando receptivo ActionId = ""
+            //if (ActionId == "")
+            //{
+            //    Incluir_Receptivo();
+            //}
+            //else
+            //{
+            //    cboOrigem.Text = Queue;
+            //    txtNome.Text = ContactName;
+            //}
+            
         }
+
+        private void vonix1_onReceiveAnswer(string CallId , string strDate , int WaitSeconds )
+        {
+            // qdo o agente atende a chamada
+            txtStatusLigacao.Text = "chamada atendida";
+        }
+
+        private void vonix1_onReceiveFailure(string CallId , string strDate, int RingingSeconds)
+        {
+            // qdo o agente nao atende a chamada
+            txtStatusLigacao.Text = "chamada descartada";
+            EncerraContato(clsAtivo.Atv_cod, "0", "LIGACAO DESCARTADA");
+        }
+
 
         private void PreencheTel()
         {
@@ -466,19 +525,15 @@ namespace TesteCRM.Forms
             }
         }
 
-        private void vonix1_onDialFailure(string CallId, string strDate, int CauseId, string CauseDescription)
-        {
-            txtStatusLigacao.Text = "encerrou ou falha na ligação";
-        }
-
         private void vonix1_onHangUp(string CallId, string strDate, int CauseId, string CauseDescription)
         {
-            //BuscaAgendamento();
+            // ocorre no desligamento da chamada / discada ou recebida
             txtStatusLigacao.Text = "Ligação desligada";
         }
 
         private void vonix1_onStatus(string Status, string Location, string ActionId)
         {
+            // ocorre em resposta a chamada do status
             txtStatusLigacao.Text = "";
             if (Status == "ONLINE")
             {
@@ -526,9 +581,24 @@ namespace TesteCRM.Forms
             }
         }
 
-        private void rbLigMuda_CheckedChanged(object sender, EventArgs e)
+        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
 
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            if(txtDDD1.Text != "" && txtFone1.Text != "")
+            {
+                try
+                {
+                    vonix1.Dial(txtDDD1.Text + txtFone1.Text);
+                }
+                catch
+                {
+                    MessageBox.Show("Erro ao conectar com o Vonix", "Sistema", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                }
+            }
         }
     }
 }

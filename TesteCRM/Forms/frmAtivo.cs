@@ -846,12 +846,14 @@ namespace TesteCRM.Forms
 
         private void vonix1_onConnect(string strDate, string ActionId)
         {
+            // ocorre quando a conexao com o dialer é estabelecida
             txtStatusVonix.Text = ConectaAoDiscador();
             txtStatusLigacao.Text = "";
         }
 
         private void vonix1_onDial(string CallId, string strDate, string Agent, string Queue, string From, string To, string CallFilename, string ContactName, string ActionId)
         {
+            // qdo o agente realizado uma chamada
             //Classes.Receive.CallId = CallId;
             //Classes.Receive.StrDate = strDate.Substring(6, 4) + "-" + strDate.Substring(3, 2) + "-" + strDate.Substring(0, 2);
             //Classes.Receive.Queue = Queue;
@@ -865,11 +867,19 @@ namespace TesteCRM.Forms
 
         private void vonix1_onDialAnswer(string CallId, string strDate)
         {
+            // qdo a chamada é atendida
             txtStatusLigacao.Text = "Atendeu";
+        }
+
+        private void vonix1_onDialFailure(string CallId, string strDate, int CauseId, string CauseDescription)
+        {
+            // qdo a chamada nao eh atendida ou falha
+            txtStatusLigacao.Text = "encerrou ou falha na ligação";
         }
 
         private void vonix1_onLogin(string strDate, string Location, string ActionId)
         {
+            // qdo o agente se loga
             timerLogando.Enabled = false;
             txtStatusVonix.Text = "LOGADO";
             txtStatusLigacao.Text = "";
@@ -883,6 +893,7 @@ namespace TesteCRM.Forms
 
         private void vonix1_onLogoff(string strDate, string Location, int Duration, string ActionId)
         {
+            // qdo o agente se desloga
             timerLogando.Enabled = true;
             txtStatusVonix.Text = "DESLOGADO";
             txtStatusLigacao.Text = "";
@@ -892,27 +903,61 @@ namespace TesteCRM.Forms
 
         private void vonix1_onPause(string strDate, int Reason, string ActionId)
         {
+            // qdo o agente entra em pausa
             txtStatusLigacao.Text = "em pausa : " + Reason;
         }
 
         private void vonix1_onUnpause(string strDate, string ActionId)
         {
+            // qdo o agente sai da pausa
             txtStatusLigacao.Text = "retorno da pausa  ";
-        }
-
-        private void vonix1_onDialFailure(string CallId, string strDate, int CauseId, string CauseDescription)
-        {
-            txtStatusLigacao.Text = "encerrou ou falha na ligação";
         }
 
         private void vonix1_onHangUp(string CallId, string strDate, int CauseId, string CauseDescription)
         {
+            // ocorre no desligamento da chamada / discada ou recebida
             //BuscaAgendamento();
             txtStatusLigacao.Text = "Ligação desligada";
+        }
+        private void vonix1_onReceive(string CallId, string strDate, string Queue, string From, string To, string CallFilename, string ContactName, string ActionId)
+        {
+            // qdo o agente recebe uma chamada
+            Limpar();
+
+            clsVonix.CallId = CallId;
+            clsVonix.StrDate = strDate.Substring(6, 4) + "-" + strDate.Substring(3, 2) + "-" + strDate.Substring(0, 2);
+            clsVonix.Queue = Queue;
+            clsVonix.From = From;
+            clsVonix.To = To;
+            clsVonix.CallFilename = CallFilename;
+            clsVonix.Contactname = ContactName;
+            clsVonix.ActionId = ActionId;
+
+            txtStatusLigacao.Text = "EM ATENDIMENTO";
+            
+            ////// quando receptivo ActionId = ""
+            ////if (ActionId != "")
+            ////{
+            ////    Incluir_Receptivo();
+            ////}
+        }
+
+        private void vonix1_onReceiveAnswer(string CallId, string strDate, int WaitSeconds)
+        {
+            // qdo o agente atende a chamada
+            txtStatusLigacao.Text = "chamada atendida";
+        }
+
+        private void vonix1_onReceiveFailure(string CallId, string strDate, int RingingSeconds)
+        {
+            // qdo o agente nao atende a chamada
+            txtStatusLigacao.Text = "chamada descartada";
+            EncerraContato(clsAtivo.Atv_cod, "0", "LIGACAO DESCARTADA");
         }
 
         private void vonix1_onStatus(string Status, string Location, string ActionId)
         {
+            // ocorre em resposta a chamada do status
             txtStatusLigacao.Text = "";
             if (Status == "ONLINE")
             {

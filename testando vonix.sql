@@ -44,13 +44,18 @@
 
 			
 
+		select * from receptivo where operador = '07703803871' order by ID_RECEPT desc 
+
+		delete from RECEPTIVO where operador = '07703803871'
 
 
+		
 
+		select * from net_2013.dbo.usuario where cod = 1 
+		update net_2013.dbo.usuario set matricula = '15586' where cod = 1 
 
-		use net_2013
+		select * from net_2013.dbo.receptivo where operador = '07703803871' order by ID_RECEPT desc 
 
-		select * from vendas where ID_VENDA = 468956 
-			update vendas set turno = 'EQUIPE 5' where ID_VENDA = 468956 
-
-		select * from usuario where usuario = 'CAMILA PAULINO' 
+		
+		select * from net_2013.dbo.receptivo where resultado = 'Ligação descartada'
+		select * from net_2013.dbo.cadastro_new where resultado = 'Ligação descartada'

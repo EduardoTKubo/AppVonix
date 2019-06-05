@@ -123,6 +123,30 @@
   <metadata name="toolTip1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>421, 15</value>
   </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="button1.Image" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        /9j/4AAQSkZJRgABAQEAYABgAAD/2wBDAAIBAQIBAQICAgICAgICAwUDAwMDAwYEBAMFBwYHBwcGBwcI
+        CQsJCAgKCAcHCg0KCgsMDAwMBwkODw0MDgsMDAz/2wBDAQICAgMDAwYDAwYMCAcIDAwMDAwMDAwMDAwM
+        DAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAwMDAz/wAARCAAYABgDASIAAhEBAxEB/8QA
+        HwAAAQUBAQEBAQEAAAAAAAAAAAECAwQFBgcICQoL/8QAtRAAAgEDAwIEAwUFBAQAAAF9AQIDAAQRBRIh
+        MUEGE1FhByJxFDKBkaEII0KxwRVS0fAkM2JyggkKFhcYGRolJicoKSo0NTY3ODk6Q0RFRkdISUpTVFVW
+        V1hZWmNkZWZnaGlqc3R1dnd4eXqDhIWGh4iJipKTlJWWl5iZmqKjpKWmp6ipqrKztLW2t7i5usLDxMXG
+        x8jJytLT1NXW19jZ2uHi4+Tl5ufo6erx8vP09fb3+Pn6/8QAHwEAAwEBAQEBAQEBAQAAAAAAAAECAwQF
+        BgcICQoL/8QAtREAAgECBAQDBAcFBAQAAQJ3AAECAxEEBSExBhJBUQdhcRMiMoEIFEKRobHBCSMzUvAV
+        YnLRChYkNOEl8RcYGRomJygpKjU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6goOE
+        hYaHiImKkpOUlZaXmJmaoqOkpaanqKmqsrO0tba3uLm6wsPExcbHyMnK0tPU1dbX2Nna4uPk5ebn6Onq
+        8vP09fb3+Pn6/9oADAMBAAIRAxEAPwD6k/bG/wCDvD9nH9mD4r+IfBWgaD4++JeseGb19Pu77Sbe3tdH
+        eaN2SZI55pRJJsdSN6wmN+qOykMfDv8AiNx8FeV9o/4Z68a/YfM2+f8A8JBBjGf+uOM+2evfvXT/APBX
+        H9nH4b/8EL/2W5vjT4N1DR7/AOKFxqKaJ4EgvPhX4CtorHU50kYX3mWOg21yjWkCTTxssuwzxwLIro7I
+        3Kn/AIJE34/4N0P+E4/4aq/aE/tT/hUv/CYfYv8AhM7v/hEfsP8AZn2r+wv7M37fsfkf6N137/n27P8A
+        RaAPdf2Of+DvD9m/9p/4q+HfBWv6D4++GmseJr5NPtb7Vra3udHSaR1SFJLiGUyR73YLvaERp1d1UFgV
+        5r/wSQ/Zw+G//Bc79lqH41eMtQ0Wx+KEOoPonju3svhX4CuI73U4EjJvjJf6Dc3LvdwPDPIxlKCeWdY1
+        REVFKAPrz/gtJ/wRH0f/AILK2vw4g1j4ia14Eh+Hb6k8cdjpyXi6g14LUZcPIgUx/ZeCM/61unf5J/4h
+        FL7/AIUn/wAK0/4bA+Mf/CuPO+0f8Ip9mb+xPN8zzd/2P7V5G7zPnzszu+brzRRQB9bf8EW/+CI+j/8A
+        BGq1+I8Gj/ETWvHcPxEfTXkjvtOSzXT2sxdDKBJHDGT7VyTj/VL17FFFAH//2Q==
+</value>
+  </data>
   <metadata name="timerLogando.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>518, 15</value>
   </metadata>

@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(frmReceptivo));
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.tsslabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslabel2 = new System.Windows.Forms.ToolStripStatusLabel();
@@ -65,6 +66,7 @@
             this.txtStatusVonix = new System.Windows.Forms.TextBox();
             this.timerLogando = new System.Windows.Forms.Timer(this.components);
             this.vonix1 = new System.Pabx.Vonix();
+            this.button1 = new System.Windows.Forms.Button();
             this.statusStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox4.SuspendLayout();
@@ -120,6 +122,7 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.lblIdRecept);
             this.groupBox1.Controls.Add(this.btnVendas);
             this.groupBox1.Controls.Add(this.btnLimpar);
@@ -197,7 +200,6 @@
             this.rbLigMuda.TabStop = true;
             this.rbLigMuda.Text = "Ligação Muda";
             this.rbLigMuda.UseVisualStyleBackColor = true;
-            this.rbLigMuda.CheckedChanged += new System.EventHandler(this.rbLigMuda_CheckedChanged);
             this.rbLigMuda.Click += new System.EventHandler(this.rbLigMuda_Click);
             // 
             // rbLigErrado
@@ -343,7 +345,6 @@
             // 
             // cboOrigem
             // 
-            this.cboOrigem.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
             this.cboOrigem.Enabled = false;
             this.cboOrigem.FormattingEnabled = true;
             this.cboOrigem.Location = new System.Drawing.Point(73, 26);
@@ -399,6 +400,7 @@
             this.dataGridView1.Name = "dataGridView1";
             this.dataGridView1.Size = new System.Drawing.Size(349, 137);
             this.dataGridView1.TabIndex = 0;
+            this.dataGridView1.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView1_CellContentClick);
             this.dataGridView1.DoubleClick += new System.EventHandler(this.dataGridView1_DoubleClick);
             // 
             // groupBox3
@@ -440,11 +442,23 @@
             this.vonix1.onDialAnswerVx += new System.Pabx.Vonix.cbDialAnswer(this.vonix1_onDialAnswer);
             this.vonix1.onHangUpVx += new System.Pabx.Vonix.cbHangUp(this.vonix1_onHangUp);
             this.vonix1.onReceiveVx += new System.Pabx.Vonix.cbReceive(this.vonix1_onReceive);
+            this.vonix1.onReceiveAnswerVx += new System.Pabx.Vonix.cbReceiveAnswer(this.vonix1_onReceiveAnswer);
+            this.vonix1.onReceiveFailureVx += new System.Pabx.Vonix.cbReceiveFailure(this.vonix1_onReceiveFailure);
             this.vonix1.onLoginVx += new System.Pabx.Vonix.cbLogin(this.vonix1_onLogin);
             this.vonix1.onLogoffVx += new System.Pabx.Vonix.cbLogoff(this.vonix1_onLogoff);
             this.vonix1.onPauseVx += new System.Pabx.Vonix.cbPause(this.vonix1_onPause);
             this.vonix1.onUnpauseVx += new System.Pabx.Vonix.cbUnpause(this.vonix1_onUnpause);
             this.vonix1.onStatusVx += new System.Pabx.Vonix.cbStatus(this.vonix1_onStatus);
+            // 
+            // button1
+            // 
+            this.button1.Image = ((System.Drawing.Image)(resources.GetObject("button1.Image")));
+            this.button1.Location = new System.Drawing.Point(206, 79);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(37, 23);
+            this.button1.TabIndex = 26;
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
             // 
             // frmReceptivo
             // 
@@ -515,5 +529,6 @@
         private System.Pabx.Vonix vonix1;
         private System.Windows.Forms.TextBox txtStatusLigacao;
         private System.Windows.Forms.TextBox txtStatusVonix;
+        private System.Windows.Forms.Button button1;
     }
 }

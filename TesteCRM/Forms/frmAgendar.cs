@@ -23,7 +23,7 @@ namespace TesteCRM.Forms
                 {
                     if (clsVariaveis.GintPreditiva == 3)
                     {
-                        clsVariaveis.GstrSQL = "INSERT INTO RECEPTIVO_AG ( ID ,OPERADOR ,DATA ,HORA ,CONTATO ,OBS ,REG_DATA ,REG_HORA ) VALUES ( " + clsReceptivo.Rcp_id_recept ; ;
+                        clsVariaveis.GstrSQL = "INSERT INTO RECEPTIVO_AG ( ID ,OPERADOR ,DATA ,HORA ,CONTATO ,OBS ,REG_DATA ,REG_HORA ) VALUES ( " + clsReceptivo.Rec_Id_Recept ; ;
                         clsVariaveis.GstrSQL += " ," + clsFuncoes.MontaInsert(clsUsuarioLogado.Usu_cpf, "TEXT");
                         clsVariaveis.GstrSQL += " ,'" + dtpData.Value.ToString("yyyy-MM-dd") + "' ,'" + dtpHora.Value.ToString("HH:mm:ss") + "'";
                         clsVariaveis.GstrSQL += " ," + clsFuncoes.MontaInsert(txtContato.Text, "TEXT");
