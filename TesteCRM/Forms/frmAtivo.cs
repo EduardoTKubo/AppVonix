@@ -306,9 +306,11 @@ namespace TesteCRM.Forms
         {
             lblCodigo.Text = "";
 
+            string sVonix = txtStatusVonix.Text;
             clsFuncoes.LimpaCampos(this, groupBox1);
             clsFuncoes.LimpaCampos(this, groupBox2);
             clsFuncoes.LimpaCampos(this, groupBox3);
+            txtStatusVonix.Text = sVonix;
 
             LimpaClsAtivo();
             LimpaClsVariaveis();
@@ -847,7 +849,10 @@ namespace TesteCRM.Forms
         private void vonix1_onConnect(string strDate, string ActionId)
         {
             // ocorre quando a conexao com o dialer é estabelecida
-            txtStatusVonix.Text = ConectaAoDiscador();
+            //txtStatusVonix.Text = ConectaAoDiscador();
+
+            timerLogando.Enabled = false;
+            txtStatusVonix.Text = "LOGADO";
             txtStatusLigacao.Text = "";
         }
 
@@ -1000,6 +1005,7 @@ namespace TesteCRM.Forms
             }
             catch
             {
+                clsVonix.LogadoNoVonix = "NAO";
                 vonix1.Desconectar();
                 vonix1.Dispose();
             }

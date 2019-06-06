@@ -35,7 +35,6 @@ namespace TesteCRM.Forms
             InicializaVonix();
             PreencheGridAg();
 
-
             if (clsVonix.LogadoNoVonix == "NAO")
             {
                 txtStatusVonix.Text = ConectaAoDiscador();
@@ -44,6 +43,7 @@ namespace TesteCRM.Forms
             {
                 txtStatusVonix.Text = "LOGADO";
             }
+
         }
 
         private void Incluir_Receptivo()
@@ -172,7 +172,9 @@ namespace TesteCRM.Forms
         {
             clsFuncoes.LimpaCampos(this, groupBox1);
             clsFuncoes.LimpaCampos(this, groupBox2);
+            string sVonix = txtStatusVonix.Text;
             clsFuncoes.LimpaCampos(this, groupBox3);
+            txtStatusVonix.Text = sVonix;
         }
 
         private bool EncerraContato(string _codigo, string _uso, string _res)
@@ -384,8 +386,9 @@ namespace TesteCRM.Forms
                     vonix1.Pabx = "10.0.32.7";
                     vonix1.AgenteCod = clsUsuarioLogado.Usu_matricula.ToString();
                     vonix1.Connectar();
+
                     timerLogando.Enabled = false;
-                    return "LOGADO";
+                    return "LOGANDO";
                 }
                 catch
                 {
@@ -399,7 +402,10 @@ namespace TesteCRM.Forms
         private void vonix1_onConnect(string strDate, string ActionId)
         {
             // ocorre quando a conexao com o dialer é estabelecida
-            txtStatusVonix.Text = ConectaAoDiscador();
+            //txtStatusVonix.Text = ConectaAoDiscador();
+
+            timerLogando.Enabled = false;
+            txtStatusVonix.Text = "LOGADO";
             txtStatusLigacao.Text = "";
         }
 
@@ -478,19 +484,7 @@ namespace TesteCRM.Forms
 
             cboOrigem.Text = Queue;
             txtNome.Text = ContactName;
-            Incluir_Receptivo();
-
-            //// quando receptivo ActionId = ""
-            //if (ActionId == "")
-            //{
-            //    Incluir_Receptivo();
-            //}
-            //else
-            //{
-            //    cboOrigem.Text = Queue;
-            //    txtNome.Text = ContactName;
-            //}
-            
+            Incluir_Receptivo();            
         }
 
         private void vonix1_onReceiveAnswer(string CallId , string strDate , int WaitSeconds )
@@ -576,14 +570,10 @@ namespace TesteCRM.Forms
             }
             catch
             {
+                clsVonix.LogadoNoVonix = "NAO";
                 vonix1.Desconectar();
                 vonix1.Dispose();
             }
-        }
-
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-
         }
 
         private void button1_Click(object sender, EventArgs e)

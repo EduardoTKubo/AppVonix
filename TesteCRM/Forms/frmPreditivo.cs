@@ -23,9 +23,31 @@ namespace TesteCRM.Forms
             tsslabel3.Text = DateTime.Now.ToString("dd/MM/yyyy");
 
             Limpar();
+
+            if (clsVonix.LogadoNoVonix == "NAO")
+            {
+                txtStatusVonix.Text = ConectaAoDiscador();
+            }
+            else
+            {
+                txtStatusVonix.Text = "LOGADO";
+            }
+
         }
 
 
+
+        private void InicializaVonix()
+        {
+            clsVonix.CallId = "";
+            clsVonix.StrDate = "";
+            clsVonix.Queue = "";
+            clsVonix.From = "";
+            clsVonix.To = "";
+            clsVonix.CallFilename = "";
+            clsVonix.Contactname = "";
+            clsVonix.ActionId = "";
+        }
 
         private bool EncerraContato(string _codigo, string _uso, string _res)
         {
@@ -128,9 +150,13 @@ namespace TesteCRM.Forms
         {
             LimpaClsAtivo();
             LimpaClsVariaveis();
+            InicializaVonix();
+
+            string sVonix = txtStatusVonix.Text;
             clsFuncoes.LimpaCampos(this, groupBox1);
             clsFuncoes.LimpaCampos(this, groupBox3);
             clsFuncoes.LimpaCampos(this, groupBox8);
+            txtStatusVonix.Text = sVonix;
             ListaAgendamento();
             this.lblCodigo.Text = "";
         }
@@ -161,6 +187,27 @@ namespace TesteCRM.Forms
         }
 
 
+        private void frmPreditivo_FormClosed(object sender, FormClosedEventArgs e)
+        {
+            try
+            {
+                if (clsVonix.LogadoNoVonix == "SIM")
+                {
+                    vonix1.Logoff();
+                }
+                System.Threading.Thread.Sleep(2000);
+                vonix1.Desconectar();
+                vonix1.Dispose();
+                clsVonix.LogadoNoVonix = "NAO";
+            }
+            catch
+            {
+                clsVonix.LogadoNoVonix = "NAO";
+                vonix1.Desconectar();
+                vonix1.Dispose();
+            }
+        }
+
         private void frmPreditivo_FormClosing(object sender, FormClosingEventArgs e)
         {
             if (clsAtivo.Atv_cod != "")
@@ -169,6 +216,9 @@ namespace TesteCRM.Forms
                 {
                     clsVariaveis.GstrSQL = "UPDATE AGENDA SET ATIVO = 1 WHERE ID_AG = " + clsAtivo.Atv_id_ag;
                     bool booAg = clsBanco.ExecuteQuery(clsVariaveis.GstrSQL);
+
+                    clsVariaveis.GstrSQL = "UPDATE CADASTRO SET USO = 9 where codigo = " + clsAtivo.Atv_cod;
+                    bool booCad = clsBanco.ExecuteQuery(clsVariaveis.GstrSQL);
                 }
                 else
                 {
@@ -182,20 +232,24 @@ namespace TesteCRM.Forms
 
         private void PreencherTela(string _codigo, string _ddd, string _fone, string _ehAgenda, string _id_ag, string _obsAg)
         {
-            if (_codigo != "")
+            clsVariaveis.GstrSQL = "select top 1 codigo from AUX_TEL_PRED where TELEFONE = '" + _ddd + _fone + "'";
+            DataTable dt1 = new DataTable();
+            dt1 = Classes.clsBanco.Consulta(clsVariaveis.GstrSQL);
+            if (dt1.Rows.Count > 0)
             {
-                clsVariaveis.GstrSQL = ("select * from Cadastro where codigo = @cod ").Replace("@cod", _codigo);
+                _codigo = dt1.Rows[0]["id"].ToString();
+
+                clsVariaveis.GstrSQL = ("select * from Cadastro where codigo = @cod ").Replace("@cod", clsAtivo.Atv_cod);
             }
             else
             {
-                clsVariaveis.GstrSQL = "select top 1 codigo from AUX_TEL_PRED where TELEFONE = '" + _ddd + _fone + "'";
-                DataTable dt1 = new DataTable();
-                dt1 = Classes.clsBanco.Consulta(clsVariaveis.GstrSQL);
-                if (dt1.Rows.Count > 0)
+                if (_codigo != "")
                 {
-                    _codigo = dt1.Rows[0]["id"].ToString();
-
-                    clsVariaveis.GstrSQL = ("select * from Cadastro where codigo = @cod ").Replace("@cod", clsAtivo.Atv_cod);
+                    clsVariaveis.GstrSQL = ("select * from Cadastro where codigo = @cod ").Replace("@cod", _codigo);
+                }
+                else
+                {
+                    return;
                 }
             }
 
@@ -259,7 +313,7 @@ namespace TesteCRM.Forms
         }
 
 
-        private void rbGeral(RadioButton _rb, string _uso, string _res ,string _confirma)
+        private void rbGeral(RadioButton _rb, string _uso, string _res, string _confirma)
         {
             if (clsAtivo.Atv_cod != "")
             {
@@ -323,7 +377,7 @@ namespace TesteCRM.Forms
 
         private void rbLD_Click(object sender, EventArgs e)
         {
-            rbGeral(rbLD, "9", rbLD.Text,"SIM");
+            rbGeral(rbLD, "9", rbLD.Text, "SIM");
         }
 
         private void rbLT_Click(object sender, EventArgs e)
@@ -361,7 +415,7 @@ namespace TesteCRM.Forms
 
                 if (Classes.clsVariaveis.SalvarInformacao)
                 {
-                    rbGeral(rbNegativa, "9", Classes.clsVariaveis.GstrNegativa,"NAO");
+                    rbGeral(rbNegativa, "9", Classes.clsVariaveis.GstrNegativa, "NAO");
                 }
             }
             rbNegativa.Checked = false;
@@ -384,7 +438,7 @@ namespace TesteCRM.Forms
 
                 if (Classes.clsVariaveis.SalvarInformacao)
                 {
-                    rbGeral(rbVenda, "9", "OK","NAO");
+                    rbGeral(rbVenda, "9", "OK", "NAO");
                 }
                 else
                 {
@@ -420,6 +474,198 @@ namespace TesteCRM.Forms
         {
             Classes.clsFuncoes.OpenFormModal(new Forms.frmAgendas());
             ListaAgendamento();
+        }
+
+
+
+
+        private string ConectaAoDiscador()
+        {
+            txtStatusLigacao.Text = "";
+
+            if (clsVonix.LogadoNoVonix == "SIM")
+            {
+                timerLogando.Enabled = false;
+                return "LOGADO";
+            }
+            else
+            {
+                try
+                {
+                    vonix1.Pabx = "10.0.32.7";
+                    vonix1.AgenteCod = clsUsuarioLogado.Usu_matricula.ToString();
+                    vonix1.Connectar();
+
+                    timerLogando.Enabled = false;
+                    return "LOGANDO";
+                }
+                catch
+                {
+                    clsVonix.LogadoNoVonix = "NAO";
+                    timerLogando.Enabled = true;
+                    return "FALHA AO LOGAR NO VONIX";
+                }
+            }
+        }
+
+
+        private void vonix1_onConnect(string strDate, string ActionId)
+        {
+            // ocorre quando a conexao com o dialer é estabelecida
+            //txtStatusVonix.Text = ConectaAoDiscador();
+
+            timerLogando.Enabled = false;
+            txtStatusVonix.Text = "LOGADO";
+            txtStatusLigacao.Text = "";
+        }
+
+        private void vonix1_onDial(string CallId, string strDate, string Agent, string Queue, string From, string To, string CallFilename, string ContactName, string ActionId)
+        {
+            // qdo o agente realizado uma chamada
+            //clsVonix.CallId = CallId;
+            //clsVonix.StrDate = strDate.Substring(6, 4) + "-" + strDate.Substring(3, 2) + "-" + strDate.Substring(0, 2);
+            clsVonix.Queue = Queue;
+            //clsVonix.From = From;
+            //clsVonix.To = To;
+            clsVonix.CallFilename = CallFilename;
+            //clsVonix.Contactname = ContactName;
+            //clsVonix.ActionId = ActionId;
+            txtStatusLigacao.Text = "Discando para : " + To;
+        }
+
+        private void vonix1_onDialAnswer(string CallId, string strDate)
+        {
+            // qdo a chamada é atendida
+            txtStatusLigacao.Text = "Cliente Atendeu";
+        }
+
+        private void vonix1_onDialFailure(string CallId, string strDate, int CauseId, string CauseDescription)
+        {
+            // qdo a chamada nao eh atendida ou falha
+            txtStatusLigacao.Text = "encerramento : " + CauseDescription;
+        }
+
+        private void vonix1_onLogin(string strDate, string Location, string ActionId)
+        {
+            // qdo o agente se loga
+            timerLogando.Enabled = false;
+            txtStatusVonix.Text = "LOGADO";
+            txtStatusLigacao.Text = "";
+            clsVonix.LogadoNoVonix = "SIM";
+        }
+
+        private void vonix1_onLogoff(string strDate, string Location, int Duration, string ActionId)
+        {
+            // qdo o agente se desloga
+            timerLogando.Enabled = true;
+            txtStatusVonix.Text = "DESLOGADO";
+            txtStatusLigacao.Text = "";
+            clsVonix.LogadoNoVonix = "NAO";
+        }
+
+        private void vonix1_onPause(string strDate, int Reason, string ActionId)
+        {
+            // qdo o agente entra em pausa
+            txtStatusLigacao.Text = "em pausa : " + Reason;
+        }
+
+        private void vonix1_onUnpause(string strDate, string ActionId)
+        {
+            // qdo o agente sai da pausa
+            txtStatusLigacao.Text = "retorno da pausa  ";
+        }
+
+        private void vonix1_onReceive(string CallId, string strDate, string Queue, string From, string To, string CallFilename, string ContactName, string ActionId)
+        {
+            // qdo o agente recebe uma chamada
+            Limpar();
+
+            clsVonix.CallId = CallId;
+            clsVonix.StrDate = strDate.Substring(6, 4) + "-" + strDate.Substring(3, 2) + "-" + strDate.Substring(0, 2);
+            clsVonix.Queue = Queue;
+            clsVonix.From = From;
+            clsVonix.To = To;
+            clsVonix.CallFilename = CallFilename;
+            clsVonix.Contactname = ContactName;
+            clsVonix.ActionId = ActionId;
+
+            txtStatusLigacao.Text = "EM ATENDIMENTO : " + From;
+
+
+            int pos = clsVonix.ActionId.IndexOf("-");
+            if (pos >= 0)
+            {
+                clsVonix.ActionId = clsVonix.ActionId.Substring(0, pos);
+            }
+            clsAtivo.Atv_cod = clsVonix.ActionId;
+
+            PreencheTel();
+            PreencherTela(clsAtivo.Atv_cod, clsVariaveis.GstrDDD, clsVariaveis.GstrTel, "PREDITIVO", "", "");
+
+        }
+
+        private void vonix1_onReceiveAnswer(string CallId, string strDate, int WaitSeconds)
+        {
+            // qdo o agente atende a chamada
+            txtStatusLigacao.Text = "chamada atendida";
+        }
+
+        private void vonix1_onReceiveFailure(string CallId, string strDate, int RingingSeconds)
+        {
+            // qdo o agente nao atende a chamada
+            txtStatusLigacao.Text = "chamada descartada";
+            EncerraContato(clsAtivo.Atv_cod, "0", "LIGACAO DESCARTADA");
+        }
+
+
+        private void PreencheTel()
+        {
+            if (clsVonix.From.Length > 10)
+            {
+                clsVariaveis.GstrDDD = clsVonix.From.Substring(0, 2);
+                clsVariaveis.GstrTel = clsVonix.From.Substring(2, 9);
+            }
+            else
+            {
+                clsVariaveis.GstrDDD = clsVonix.From.Substring(0, 2);
+                clsVariaveis.GstrTel = clsVonix.From.Substring(2, 8);
+            }
+        }
+
+        private void vonix1_onHangUp(string CallId, string strDate, int CauseId, string CauseDescription)
+        {
+            // ocorre no desligamento da chamada / discada ou recebida
+            txtStatusLigacao.Text = "Ligação desligada";
+        }
+
+        private void vonix1_onStatus(string Status, string Location, string ActionId)
+        {
+            // ocorre em resposta a chamada do status
+            txtStatusLigacao.Text = "";
+            if (Status == "ONLINE")
+            {
+                timerLogando.Enabled = false;
+                txtStatusVonix.Text = "LOGADO";
+            }
+            else
+            {
+                timerLogando.Enabled = true;
+                txtStatusVonix.Text = "AGUARDANDO LOGAR NO VONIX";
+            }
+        }
+
+        private void timerLogando_Tick_1(object sender, EventArgs e)
+        {
+            if (clsVonix.LogadoNoVonix == "NAO")
+            {
+                vonix1.Login();
+                timerLogando.Enabled = false;
+            }
+            else
+            {
+                timerLogando.Enabled = true;
+                vonix1.Status("");
+            }
         }
     }
 }

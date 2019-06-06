@@ -54,8 +54,9 @@
             this.tsslabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslabel2 = new System.Windows.Forms.ToolStripStatusLabel();
             this.tsslabel3 = new System.Windows.Forms.ToolStripStatusLabel();
-            this.rbVonix = new System.Windows.Forms.RadioButton();
             this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.txtStatusVonix = new System.Windows.Forms.TextBox();
+            this.txtStatusLigacao = new System.Windows.Forms.TextBox();
             this.btnLocaliza = new System.Windows.Forms.Button();
             this.btnEstorno = new System.Windows.Forms.Button();
             this.btnVendas = new System.Windows.Forms.Button();
@@ -72,6 +73,8 @@
             this.txtAgenda = new System.Windows.Forms.TextBox();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.dtgAg = new System.Windows.Forms.DataGridView();
+            this.timerLogando = new System.Windows.Forms.Timer(this.components);
+            this.vonix1 = new System.Pabx.Vonix();
             this.groupBox1.SuspendLayout();
             this.statusStrip1.SuspendLayout();
             this.groupBox3.SuspendLayout();
@@ -96,7 +99,7 @@
             this.groupBox1.Controls.Add(this.lblNome);
             this.groupBox1.Controls.Add(this.lblFone1);
             this.groupBox1.Controls.Add(this.lblDDD1);
-            this.groupBox1.Location = new System.Drawing.Point(12, 26);
+            this.groupBox1.Location = new System.Drawing.Point(12, 3);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(366, 231);
             this.groupBox1.TabIndex = 1;
@@ -321,7 +324,7 @@
             this.tsslabel1,
             this.tsslabel2,
             this.tsslabel3});
-            this.statusStrip1.Location = new System.Drawing.Point(0, 386);
+            this.statusStrip1.Location = new System.Drawing.Point(0, 361);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(763, 22);
             this.statusStrip1.TabIndex = 3;
@@ -360,20 +363,10 @@
             this.tsslabel3.Size = new System.Drawing.Size(100, 17);
             this.tsslabel3.Text = "3";
             // 
-            // rbVonix
-            // 
-            this.rbVonix.AutoSize = true;
-            this.rbVonix.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(0)))), ((int)(((byte)(0)))), ((int)(((byte)(192)))));
-            this.rbVonix.Location = new System.Drawing.Point(12, 3);
-            this.rbVonix.Name = "rbVonix";
-            this.rbVonix.Size = new System.Drawing.Size(169, 17);
-            this.rbVonix.TabIndex = 19;
-            this.rbVonix.TabStop = true;
-            this.rbVonix.Text = "Conectar-se ao discador Vonix";
-            this.rbVonix.UseVisualStyleBackColor = true;
-            // 
             // groupBox3
             // 
+            this.groupBox3.Controls.Add(this.txtStatusVonix);
+            this.groupBox3.Controls.Add(this.txtStatusLigacao);
             this.groupBox3.Controls.Add(this.btnLocaliza);
             this.groupBox3.Controls.Add(this.btnEstorno);
             this.groupBox3.Controls.Add(this.btnVendas);
@@ -385,12 +378,28 @@
             this.groupBox3.Controls.Add(this.groupBox5);
             this.groupBox3.Controls.Add(this.groupBox6);
             this.groupBox3.Cursor = System.Windows.Forms.Cursors.Default;
-            this.groupBox3.Location = new System.Drawing.Point(389, 132);
+            this.groupBox3.Location = new System.Drawing.Point(389, 100);
             this.groupBox3.Name = "groupBox3";
-            this.groupBox3.Size = new System.Drawing.Size(366, 245);
+            this.groupBox3.Size = new System.Drawing.Size(366, 252);
             this.groupBox3.TabIndex = 20;
             this.groupBox3.TabStop = false;
             this.groupBox3.Tag = "";
+            // 
+            // txtStatusVonix
+            // 
+            this.txtStatusVonix.Enabled = false;
+            this.txtStatusVonix.Location = new System.Drawing.Point(18, 204);
+            this.txtStatusVonix.Name = "txtStatusVonix";
+            this.txtStatusVonix.Size = new System.Drawing.Size(331, 20);
+            this.txtStatusVonix.TabIndex = 30;
+            // 
+            // txtStatusLigacao
+            // 
+            this.txtStatusLigacao.Enabled = false;
+            this.txtStatusLigacao.Location = new System.Drawing.Point(18, 226);
+            this.txtStatusLigacao.Name = "txtStatusLigacao";
+            this.txtStatusLigacao.Size = new System.Drawing.Size(331, 20);
+            this.txtStatusLigacao.TabIndex = 30;
             // 
             // btnLocaliza
             // 
@@ -404,7 +413,7 @@
             // 
             // btnEstorno
             // 
-            this.btnEstorno.Location = new System.Drawing.Point(191, 207);
+            this.btnEstorno.Location = new System.Drawing.Point(191, 175);
             this.btnEstorno.Name = "btnEstorno";
             this.btnEstorno.Size = new System.Drawing.Size(62, 23);
             this.btnEstorno.TabIndex = 24;
@@ -413,7 +422,7 @@
             // 
             // btnVendas
             // 
-            this.btnVendas.Location = new System.Drawing.Point(288, 207);
+            this.btnVendas.Location = new System.Drawing.Point(288, 175);
             this.btnVendas.Name = "btnVendas";
             this.btnVendas.Size = new System.Drawing.Size(62, 23);
             this.btnVendas.TabIndex = 23;
@@ -423,7 +432,7 @@
             // 
             // btnAgenda
             // 
-            this.btnAgenda.Location = new System.Drawing.Point(87, 207);
+            this.btnAgenda.Location = new System.Drawing.Point(87, 175);
             this.btnAgenda.Name = "btnAgenda";
             this.btnAgenda.Size = new System.Drawing.Size(62, 23);
             this.btnAgenda.TabIndex = 22;
@@ -434,7 +443,7 @@
             // lblOrigem
             // 
             this.lblOrigem.AutoSize = true;
-            this.lblOrigem.Location = new System.Drawing.Point(17, 217);
+            this.lblOrigem.Location = new System.Drawing.Point(17, 185);
             this.lblOrigem.Name = "lblOrigem";
             this.lblOrigem.Size = new System.Drawing.Size(13, 13);
             this.lblOrigem.TabIndex = 19;
@@ -475,9 +484,9 @@
             this.groupBox5.Controls.Add(this.rbLT);
             this.groupBox5.Controls.Add(this.rbLD);
             this.groupBox5.Controls.Add(this.rbAG);
-            this.groupBox5.Location = new System.Drawing.Point(18, 63);
+            this.groupBox5.Location = new System.Drawing.Point(18, 49);
             this.groupBox5.Name = "groupBox5";
-            this.groupBox5.Size = new System.Drawing.Size(332, 76);
+            this.groupBox5.Size = new System.Drawing.Size(331, 76);
             this.groupBox5.TabIndex = 18;
             this.groupBox5.TabStop = false;
             // 
@@ -485,9 +494,9 @@
             // 
             this.groupBox6.Controls.Add(this.rbVenda);
             this.groupBox6.Controls.Add(this.rbNegativa);
-            this.groupBox6.Location = new System.Drawing.Point(16, 145);
+            this.groupBox6.Location = new System.Drawing.Point(18, 117);
             this.groupBox6.Name = "groupBox6";
-            this.groupBox6.Size = new System.Drawing.Size(334, 52);
+            this.groupBox6.Size = new System.Drawing.Size(331, 52);
             this.groupBox6.TabIndex = 20;
             this.groupBox6.TabStop = false;
             // 
@@ -520,7 +529,7 @@
             // groupBox8
             // 
             this.groupBox8.Controls.Add(this.txtAgenda);
-            this.groupBox8.Location = new System.Drawing.Point(389, 26);
+            this.groupBox8.Location = new System.Drawing.Point(389, 3);
             this.groupBox8.Name = "groupBox8";
             this.groupBox8.Size = new System.Drawing.Size(366, 100);
             this.groupBox8.TabIndex = 21;
@@ -534,13 +543,13 @@
             this.txtAgenda.MaxLength = 255;
             this.txtAgenda.Multiline = true;
             this.txtAgenda.Name = "txtAgenda";
-            this.txtAgenda.Size = new System.Drawing.Size(333, 70);
+            this.txtAgenda.Size = new System.Drawing.Size(331, 70);
             this.txtAgenda.TabIndex = 0;
             // 
             // groupBox2
             // 
             this.groupBox2.Controls.Add(this.dtgAg);
-            this.groupBox2.Location = new System.Drawing.Point(12, 262);
+            this.groupBox2.Location = new System.Drawing.Point(12, 239);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(366, 115);
             this.groupBox2.TabIndex = 22;
@@ -556,22 +565,43 @@
             this.dtgAg.TabIndex = 0;
             this.dtgAg.DoubleClick += new System.EventHandler(this.dtgAg_DoubleClick);
             // 
+            // timerLogando
+            // 
+            this.timerLogando.Interval = 5000;
+            this.timerLogando.Tick += new System.EventHandler(this.timerLogando_Tick_1);
+            // 
+            // vonix1
+            // 
+            this.vonix1.onConnectVx += new System.Pabx.Vonix.cbConnect(this.vonix1_onConnect);
+            this.vonix1.onDialVx += new System.Pabx.Vonix.cbDial(this.vonix1_onDial);
+            this.vonix1.onDialFailureVx += new System.Pabx.Vonix.cbDialFailure(this.vonix1_onDialFailure);
+            this.vonix1.onDialAnswerVx += new System.Pabx.Vonix.cbDialAnswer(this.vonix1_onDialAnswer);
+            this.vonix1.onHangUpVx += new System.Pabx.Vonix.cbHangUp(this.vonix1_onHangUp);
+            this.vonix1.onReceiveVx += new System.Pabx.Vonix.cbReceive(this.vonix1_onReceive);
+            this.vonix1.onReceiveAnswerVx += new System.Pabx.Vonix.cbReceiveAnswer(this.vonix1_onReceiveAnswer);
+            this.vonix1.onReceiveFailureVx += new System.Pabx.Vonix.cbReceiveFailure(this.vonix1_onReceiveFailure);
+            this.vonix1.onLoginVx += new System.Pabx.Vonix.cbLogin(this.vonix1_onLogin);
+            this.vonix1.onLogoffVx += new System.Pabx.Vonix.cbLogoff(this.vonix1_onLogoff);
+            this.vonix1.onPauseVx += new System.Pabx.Vonix.cbPause(this.vonix1_onPause);
+            this.vonix1.onUnpauseVx += new System.Pabx.Vonix.cbUnpause(this.vonix1_onUnpause);
+            this.vonix1.onStatusVx += new System.Pabx.Vonix.cbStatus(this.vonix1_onStatus);
+            // 
             // frmPreditivo
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.Silver;
-            this.ClientSize = new System.Drawing.Size(763, 408);
+            this.ClientSize = new System.Drawing.Size(763, 383);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox8);
             this.Controls.Add(this.groupBox3);
-            this.Controls.Add(this.rbVonix);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox1);
             this.Name = "frmPreditivo";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "frmPreditivo";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmPreditivo_FormClosing);
+            this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.frmPreditivo_FormClosed);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             this.statusStrip1.ResumeLayout(false);
@@ -611,7 +641,6 @@
         private System.Windows.Forms.ToolStripStatusLabel tsslabel1;
         private System.Windows.Forms.ToolStripStatusLabel tsslabel2;
         private System.Windows.Forms.ToolStripStatusLabel tsslabel3;
-        private System.Windows.Forms.RadioButton rbVonix;
         private System.Windows.Forms.GroupBox groupBox3;
         private System.Windows.Forms.Button btnEstorno;
         private System.Windows.Forms.Button btnVendas;
@@ -636,5 +665,9 @@
         private System.Windows.Forms.RadioButton rbCP;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.DataGridView dtgAg;
+        private System.Windows.Forms.Timer timerLogando;
+        private System.Pabx.Vonix vonix1;
+        private System.Windows.Forms.TextBox txtStatusVonix;
+        private System.Windows.Forms.TextBox txtStatusLigacao;
     }
 }
